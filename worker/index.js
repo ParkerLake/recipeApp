@@ -1,5 +1,5 @@
 /**
- * Mise en Place — Cloudflare Worker
+ * Salty Lake Recipes — Cloudflare Worker
  *
  * Handles three things so they never touch the browser:
  *   1. Recipe extraction (fetches URL + calls Claude API)

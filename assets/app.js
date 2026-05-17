@@ -18,11 +18,12 @@ const TAG_CATEGORIES = {
   }
 };
 
-/* ── Emoji placeholders by protein ───────────────────── */
-const PROTEIN_EMOJI = {
-  'Chicken':'🍗','Beef':'🥩','Pork':'🥓','Lamb':'🍖','Seafood':'🐟',
-  'Turkey':'🦃','Vegetarian':'🥦','Vegan':'🌱','Eggs':'🥚'
-};
+/* ── Placeholder icon for recipe cards without images ─── */
+const PLACEHOLDER_ICON = `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="color:#C8C5BB" aria-hidden="true">
+  <path d="M3 2v7c0 1.1.9 2 2 2h2a2 2 0 002-2V2"/>
+  <path d="M7 2v20"/>
+  <path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h1v5a1 1 0 002 0V2"/>
+</svg>`;
 
 /* ── State ────────────────────────────────────────────── */
 let recipes = [];
@@ -221,7 +222,6 @@ function renderGrid() {
   grid.innerHTML = list.map(r => {
     const protein = r.tags?.protein?.[0] || '';
     const region  = r.tags?.region?.[0]  || '';
-    const emoji   = r.imageUrl ? '' : (PROTEIN_EMOJI[protein] || '🍽');
     const imageEl = r.imageUrl
       ? `<img class="card-image" src="${escHtml(r.imageUrl)}" alt="${escHtml(r.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
       : '';
@@ -241,7 +241,7 @@ function renderGrid() {
     return `
       <article class="recipe-card" onclick="openRecipe('${r.id}')" tabindex="0" role="button" aria-label="${escHtml(r.title)}">
         ${imageEl}
-        <div class="card-image-placeholder" ${placeholderStyle}>${emoji}</div>
+        <div class="card-image-placeholder" ${placeholderStyle}>${PLACEHOLDER_ICON}</div>
         <div class="card-body">
           <div class="card-title">${escHtml(r.title)}</div>
           <div class="card-meta">

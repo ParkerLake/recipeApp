@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recipe — Mise en Place</title>
+  <title>Recipe — Salty Lake Recipes</title>
   <link rel="stylesheet" href="assets/style.css">
   <style>
     /* ── Recipe detail overrides ──────────────────────── */
@@ -41,7 +41,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .edit-btn {
+    .edit-btn, .copy-btn {
       display: flex;
       align-items: center;
       gap: 6px;
@@ -52,11 +52,17 @@
       color: var(--text-2);
       font-size: 13px;
       text-decoration: none;
-      transition: background 0.1s;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
       cursor: pointer;
+      font-family: var(--font);
     }
-    .edit-btn:hover { background: var(--bg); }
-    .edit-btn svg { width: 14px; height: 14px; }
+    .edit-btn:hover, .copy-btn:hover { background: var(--bg); }
+    .edit-btn svg, .copy-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .copy-btn.copied {
+      color: var(--success);
+      border-color: #a8d9be;
+      background: var(--success-bg);
+    }
 
     .recipe-detail {
       max-width: 760px;
@@ -235,6 +241,13 @@
       All recipes
     </a>
     <div class="detail-header-title" id="headerTitle">…</div>
+    <button class="copy-btn" id="copyBtn" aria-label="Copy link to this recipe">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M6 4H4a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1v-2"/>
+        <rect x="6" y="2" width="8" height="8" rx="1"/>
+      </svg>
+      <span id="copyBtnText">Copy link</span>
+    </button>
     <button class="edit-btn" id="editBtn">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M11 2l3 3-8 8H3v-3l8-8z"/>

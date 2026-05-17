@@ -30,8 +30,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function renderRecipe(r) {
   // Update page title
-  document.title = `${r.title} — Mise en Place`;
+  document.title = `${r.title} — Salty Lake Recipes`;
   document.getElementById('headerTitle').textContent = r.title;
+
+  // Copy link button
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      const btn = document.getElementById('copyBtn');
+      const txt = document.getElementById('copyBtnText');
+      btn.classList.add('copied');
+      txt.textContent = 'Copied!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        txt.textContent = 'Copy link';
+      }, 2000);
+    });
+  });
 
   // Edit button — passes id back to index with edit intent
   document.getElementById('editBtn').addEventListener('click', () => {
@@ -69,7 +83,10 @@ function renderRecipe(r) {
   // Notes
   const notesHtml = r.notes ? `
     <div class="notes-box">
-      <div class="section-title">📝 Notes &amp; tips</div>
+      <div class="section-title" style="display:flex;align-items:center;gap:6px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Notes &amp; tips
+      </div>
       <p>${escHtml(r.notes).replace(/\n/g,'<br>')}</p>
     </div>` : '';
 
@@ -114,7 +131,13 @@ function renderRecipe(r) {
 function renderError(msg) {
   document.getElementById('recipeDetail').innerHTML = `
     <div class="empty-state">
-      <div class="empty-icon">😕</div>
+      <div class="empty-icon">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M8.5 15.5s1.5-1.5 3.5-1.5 3.5 1.5 3.5 1.5"/>
+          <line x1="9" y1="9.5" x2="9" y2="9.51"/><line x1="15" y1="9.5" x2="15" y2="9.51"/>
+        </svg>
+      </div>
       <p class="empty-title">${escHtml(msg)}</p>
       <p><a href="index.html">Back to all recipes</a></p>
     </div>`;
