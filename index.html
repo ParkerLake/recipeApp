@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mise en Place</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-logo">
+      <span class="logo-icon">🍳</span>
+      <span class="logo-text">Mise en Place</span>
+    </div>
+    <div class="header-search">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="9" cy="9" r="6"/><path d="M15 15l-3.5-3.5"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search recipes, ingredients, notes…" autocomplete="off">
+    </div>
+    <div class="header-actions">
+      <select id="sortSelect" class="sort-select">
+        <option value="dateAdded">Newest first</option>
+        <option value="rating">Top rated</option>
+        <option value="title">A – Z</option>
+        <option value="totalTime">Quickest first</option>
+      </select>
+      <button id="addBtn" class="btn-primary">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a.75.75 0 01.75.75v3.5h3.5a.75.75 0 010 1.5h-3.5v3.5a.75.75 0 01-1.5 0v-3.5h-3.5a.75.75 0 010-1.5h3.5v-3.5A.75.75 0 018 3z"/></svg>
+        Add recipe
+      </button>
+      <button id="settingsBtn" class="btn-icon" title="Settings">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="10" cy="10" r="3"/>
+          <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Layout ───────────────────────────────────────────── -->
+  <div class="layout">
+
+    <aside class="sidebar" id="sidebar">
+      <div id="sidebarContent"></div>
+    </aside>
+
+    <main class="main">
+      <div id="activeFilterBar" class="active-filter-bar hidden"></div>
+      <div id="recipeGrid" class="recipe-grid"></div>
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">🍽</div>
+        <p class="empty-title">No recipes found</p>
+        <p class="empty-sub">Try adjusting your filters or search query</p>
+      </div>
+      <div id="loadingState" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading recipes…</p>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ── Add / Edit Modal ─────────────────────────────────── -->
+  <div id="recipeModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add recipe</h2>
+        <button class="modal-close" id="modalClose" aria-label="Close">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- URL extractor (hidden when editing) -->
+        <div id="urlSection" class="url-section">
+          <label class="field-label">Extract from URL</label>
+          <div class="url-row">
+            <input type="url" id="urlInput" placeholder="Paste any recipe URL or Pinterest link…">
+            <button id="extractBtn" class="btn-secondary extract-btn">
+              <span id="extractBtnText">Extract</span>
+            </button>
+          </div>
+          <div id="extractStatus" class="extract-status hidden"></div>
+          <div class="or-divider"><span>or fill in manually</span></div>
+        </div>
+
+        <!-- Recipe form -->
+        <form id="recipeForm" novalidate>
+          <input type="hidden" id="fieldId">
+          <input type="hidden" id="fieldSlug">
+
+          <div class="form-row">
+            <div class="field field-wide">
+              <label class="field-label" for="fieldTitle">Title <span class="required">*</span></label>
+              <input type="text" id="fieldTitle" placeholder="Recipe name" required>
+            </div>
+            <div class="field">
+              <label class="field-label" for="fieldServings">Servings</label>
+              <input type="number" id="fieldServings" placeholder="4" min="1" max="99">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="fieldSourceUrl">Source URL</label>
+            <input type="url" id="fieldSourceUrl" placeholder="https://…">
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label" for="fieldPrepTime">Prep time (min)</label>
+              <input type="number" id="fieldPrepTime" placeholder="15" min="0">
+            </div>
+            <div class="field">
+              <label class="field-label" for="fieldCookTime">Cook time (min)</label>
+              <input type="number" id="fieldCookTime" placeholder="30" min="0">
+            </div>
+            <div class="field">
+              <label class="field-label" for="fieldTotalTime">Total time (min)</label>
+              <input type="number" id="fieldTotalTime" placeholder="45" min="0">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="fieldDescription">Description</label>
+            <textarea id="fieldDescription" rows="2" placeholder="Brief description or intro…"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="fieldIngredients">Ingredients <span class="field-hint">one per line</span></label>
+            <textarea id="fieldIngredients" rows="7" placeholder="2 cups all-purpose flour&#10;1 tsp kosher salt&#10;3 large eggs…"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="fieldInstructions">Instructions <span class="field-hint">one step per line — numbered automatically</span></label>
+            <textarea id="fieldInstructions" rows="8" placeholder="Preheat oven to 375°F.&#10;Mix the dry ingredients in a large bowl.&#10;…"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="fieldNotes">Notes &amp; tips</label>
+            <textarea id="fieldNotes" rows="3" placeholder="Personal notes, substitutions, next-time ideas…"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="fieldImageUrl">Image URL <span class="field-hint">optional</span></label>
+            <input type="url" id="fieldImageUrl" placeholder="https://…">
+          </div>
+
+          <!-- Tags -->
+          <div class="tags-section">
+            <div class="field-label" style="margin-bottom:10px">Tags</div>
+            <div id="tagCheckboxes" class="tag-categories"></div>
+          </div>
+
+          <!-- Rating -->
+          <div class="field rating-field">
+            <label class="field-label">Your rating</label>
+            <div class="star-picker" id="starPicker" role="group" aria-label="Rating">
+              <button type="button" class="star" data-val="1" aria-label="1 star">★</button>
+              <button type="button" class="star" data-val="2" aria-label="2 stars">★</button>
+              <button type="button" class="star" data-val="3" aria-label="3 stars">★</button>
+              <button type="button" class="star" data-val="4" aria-label="4 stars">★</button>
+              <button type="button" class="star" data-val="5" aria-label="5 stars">★</button>
+            </div>
+            <input type="hidden" id="fieldRating" value="0">
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="deleteBtn" class="btn-danger hidden">Delete recipe</button>
+        <div class="modal-actions">
+          <button type="button" id="cancelBtn" class="btn-ghost">Cancel</button>
+          <button type="button" id="saveBtn" class="btn-primary">Save recipe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Settings Modal ───────────────────────────────────── -->
+  <div id="settingsModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close" id="settingsClose" aria-label="Close">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="settings-intro">Enter these once — they're stored in your browser only.</p>
+        <div class="field">
+          <label class="field-label" for="settingWorkerUrl">Cloudflare Worker URL</label>
+          <input type="url" id="settingWorkerUrl" placeholder="https://your-worker.workers.dev">
+          <p class="field-hint-block">The Worker handles saving recipes and URL extraction.</p>
+        </div>
+        <div class="field">
+          <label class="field-label" for="settingPassword">App Password</label>
+          <input type="password" id="settingPassword" placeholder="••••••••">
+          <p class="field-hint-block">The shared password you set in your Cloudflare Worker.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div></div>
+        <div class="modal-actions">
+          <button type="button" id="settingsCancelBtn" class="btn-ghost">Cancel</button>
+          <button type="button" id="saveSettingsBtn" class="btn-primary">Save settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast ────────────────────────────────────────────── -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
