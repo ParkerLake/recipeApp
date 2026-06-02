@@ -67,7 +67,9 @@
     },
     "dateAdded": "2026-06-02T04:09:39.482Z",
     "dateModified": "2026-06-02T04:21:19.154Z",
-    "cookedDates": [],
+    "cookedDates": [
+      "2026-05-17"
+    ],
     "status": "Tried"
   },
   {
