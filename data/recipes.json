@@ -1,5 +1,72 @@
 [
   {
+    "id": "rec_mpw4cbkqd2m7b",
+    "slug": "coconut-cake",
+    "title": "Coconut Cake",
+    "sourceUrl": "https://juliemarieeats.com/coconut-cake/?utm_source=Pinterest&utm_medium=organic",
+    "imageUrl": "https://juliemarieeats.com/wp-content/uploads/2024/11/Coconut-Cake-10-2-scaled.jpg",
+    "description": "This is the best Coconut Cake recipe! Two layers of incredibly moist and fluffy cake layers that are infused with lots of coconut flavor in every bite. The coconut cream cheese frosting adds a perfect coconut and slight tangy flavor, that will make you want to reach for a second slice. It is topped with toasted coconut flakes for a beautiful finish that makes it perfect for any occasion.",
+    "prepTime": 60,
+    "cookTime": 23,
+    "totalTime": 83,
+    "servings": 12,
+    "ingredients": [
+      "100 g unsweetened shredded coconut",
+      "260 g all-purpose flour",
+      "3/4 tsp baking powder",
+      "3/4 tsp baking soda",
+      "3/4 tsp salt",
+      "180 g butter (room temperature)",
+      "300 g granulated sugar",
+      "4  large eggs  (room temperature)",
+      "120 g sour cream (room temperature)",
+      "120 g full-fat coconut milk (room temperature)",
+      "60 g vegetable oil (e.g. canola oil)",
+      "2 tsp vanilla extract",
+      "¼ tsp coconut extract (optional)",
+      "300 g butter",
+      "150 g full-fat cream cheese",
+      "550 g powdered sugar",
+      "1 tsp full-fat coconut milk",
+      "½-1 tsp coconut extract",
+      "1/2 tsp vanilla bean paste",
+      "coconut flakes (for decoration)"
+    ],
+    "instructions": [
+      "Preheat the oven at 170ºC/340ºF conventional oven and line 2x 20 cm/8 inch baking pan with parchment paper.",
+      "Start by blending the shredded coconut into a flour-like consistency.",
+      "Sift together the blended coconut, all-purpose flour, baking powder, baking soda and salt and set it aside.",
+      "In a large bowl using an electric hand mixer or in a bowl of a stand mixer, add the butter, and granulated sugar and mix it on medium-high speed for 3 minutes.",
+      "Add the eggs two at a time into the mixture and mix until combined.",
+      "Continue by adding half the dry ingredients, on low speed, mixing until just combined.",
+      "Then add the sour cream, coconut milk, vegetable oil, vanilla extract and coconut extract and mix until just combined. Then add the other half of the dry ingredients and mix until combined.",
+      "Using a rubber spatula, give the batter a gentle fold to make sure all of the ingredients are combined.",
+      "Pour the cake into the prepared pans and bake for 20-23 minutes or until a cake tester comes out clean.",
+      "Let the cakes cool on a cooling rack. After 10 minutes, gently remove the cake from the cake tin and let the cakes cool down completely.",
+      "Take the butter and cream cheese out of the fridge 10 minutes before starting. Cut the butter into cubes. Sift the powdered sugar.",
+      "In your stand mixer, using the paddle attachment, start by creaming the butter for 5 minutes on high speed. Scrape down the sides of the bowl and give it another mix for 2 minutes.",
+      "Add the cream cheese, vanilla bean paste, coconut milk and coconut extract and cream it together with the butter for 1 minute.",
+      "Scrape down the sides of the bowl and on low speed, mix the sifted powdered sugar in 2 parts, letting the powdered sugar mix in with butter and cream cheese before adding the next part. Scrape down the sides of the bowl and give it a final mix for 2 minutes.",
+      "Place the first cake layer on your serving dish or cake board on your turntable. If you don’t have a turntable, don’t worry, you can easily decorate the cake without it.",
+      "Add 2 big scoops of frosting and with an offset spatula, even it out. Then add the other cake layer and cover the whole cake in a thin crumb coat. Place it in the refrigerator for 20 minutes so it is easier to frost the cake with the remaining buttercream.",
+      "Add the remaining frosting, and even it out over the cake. Optionally decorate with coconut flakes."
+    ],
+    "notes": "This takes much longer to bake than the recipe claims. Comes out being a dense cake, but really good. Consider dusting the cake pans with shredded/blended coconut.",
+    "rating": 4,
+    "tags": {
+      "protein": [
+        "Eggs"
+      ],
+      "region": [],
+      "complexity": [],
+      "meal": [
+        "Dessert"
+      ]
+    },
+    "dateAdded": "2026-06-02T04:09:39.482Z",
+    "dateModified": "2026-06-02T04:09:39.482Z"
+  },
+  {
     "id": "rec_sample1",
     "slug": "cacio-e-pepe",
     "title": "Cacio e Pepe",
@@ -27,10 +94,18 @@
     "notes": "Use freshly cracked pepper — pre-ground won't give you the same punch. The pasta water is everything here; starchy water is what makes the sauce creamy without cream.",
     "rating": 5,
     "tags": {
-      "protein": ["Vegetarian"],
-      "region": ["Italian"],
-      "complexity": ["Quick (<30 min)"],
-      "meal": ["Dinner"]
+      "protein": [
+        "Vegetarian"
+      ],
+      "region": [
+        "Italian"
+      ],
+      "complexity": [
+        "Quick (<30 min)"
+      ],
+      "meal": [
+        "Dinner"
+      ]
     },
     "dateAdded": "2025-01-15T10:00:00Z",
     "dateModified": "2025-01-15T10:00:00Z"
@@ -71,10 +146,18 @@
     "notes": "The broiling step is key — don't skip the char. Marinating overnight makes a big difference. Works well with cauliflower instead of chicken for a vegetarian version.",
     "rating": 4,
     "tags": {
-      "protein": ["Chicken"],
-      "region": ["Indian"],
-      "complexity": ["Easy (30-60 min)"],
-      "meal": ["Dinner"]
+      "protein": [
+        "Chicken"
+      ],
+      "region": [
+        "Indian"
+      ],
+      "complexity": [
+        "Easy (30-60 min)"
+      ],
+      "meal": [
+        "Dinner"
+      ]
     },
     "dateAdded": "2025-01-20T10:00:00Z",
     "dateModified": "2025-01-20T10:00:00Z"
