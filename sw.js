@@ -1,5 +1,5 @@
 /* ── Salty Lake Recipes — Service Worker ──────────────── */
-const CACHE = 'slr-v1';
+const CACHE = 'slr-20260601';
 const PRECACHE = [
   '/recipeApp/',
   '/recipeApp/index.html',
