@@ -58,13 +58,15 @@
         "Eggs"
       ],
       "region": [],
-      "complexity": [],
+      "complexity": [
+        "Moderate (1-2 hrs)"
+      ],
       "meal": [
         "Dessert"
       ]
     },
     "dateAdded": "2026-06-02T04:09:39.482Z",
-    "dateModified": "2026-06-02T04:09:39.482Z"
+    "dateModified": "2026-06-02T04:21:19.154Z"
   },
   {
     "id": "rec_sample1",
