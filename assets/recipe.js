@@ -7,7 +7,10 @@ const TAG_COLORS = {
   meal:       'tag-meal'
 };
 
-const STATUS_CLASS = { 'Want to try': 'status-want', 'Tried': 'status-tried', 'Regular rotation': 'status-regular' };
+const STATUS_OPTIONS = ['Want to Make', 'Made', 'Normal Rotation'];
+const STATUS_CLASS   = { 'Want to Make': 'status-want', 'Made': 'status-tried', 'Normal Rotation': 'status-regular' };
+const STATUS_ACTIVE  = { 'Want to Make': 'active-want', 'Made': 'active-made', 'Normal Rotation': 'active-normal' };
+
 const getConfig = () => ({
   workerUrl: localStorage.getItem('mep_workerUrl') || '',
   password:  localStorage.getItem('mep_password')  || ''
@@ -20,10 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
 
-  if (!id) {
-    renderError('No recipe specified.');
-    return;
-  }
+  if (!id) { renderError('No recipe specified.'); return; }
 
   try {
     const resp = await fetch('data/recipes.json?v=' + Date.now());
@@ -33,14 +33,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!recipe) throw new Error('Recipe not found');
     currentRecipe = recipe;
     renderRecipe(recipe);
-    bindMadeItButton();
   } catch (e) {
     renderError(e.message);
   }
 });
 
 function renderRecipe(r) {
-  // Update page title
   document.title = `${r.title} — Salty Lake Recipes`;
   document.getElementById('headerTitle').textContent = r.title;
 
@@ -51,10 +49,7 @@ function renderRecipe(r) {
       const txt = document.getElementById('copyBtnText');
       btn.classList.add('copied');
       txt.textContent = 'Copied!';
-      setTimeout(() => {
-        btn.classList.remove('copied');
-        txt.textContent = 'Copy link';
-      }, 2000);
+      setTimeout(() => { btn.classList.remove('copied'); txt.textContent = 'Copy link'; }, 2000);
     });
   });
 
@@ -63,7 +58,7 @@ function renderRecipe(r) {
     window.location.href = `kitchen.html?id=${encodeURIComponent(r.id)}`;
   });
 
-  // Edit button — passes id back to index with edit intent
+  // Edit button
   document.getElementById('editBtn').addEventListener('click', () => {
     window.location.href = `index.html?edit=${encodeURIComponent(r.id)}`;
   });
@@ -72,15 +67,15 @@ function renderRecipe(r) {
   const stars = [1,2,3,4,5].map(i =>
     `<span class="detail-star ${i <= (r.rating||0) ? 'filled' : ''}">★</span>`).join('');
 
-  // Status badge
-  const status = r.status || 'Want to try';
-  const statusCls = STATUS_CLASS[status] || 'status-want';
-  const statusBadge = `<span class="status-badge ${statusCls}">${escHtml(status)}</span>`;
-
   // Tags
   const allTags = Object.entries(r.tags || {}).flatMap(([cat, vals]) =>
     (vals || []).map(v => `<span class="card-tag ${TAG_COLORS[cat] || ''}">${escHtml(v)}</span>`)
   ).join('');
+
+  // Status badge (for tags row)
+  const status = r.status || 'Want to Make';
+  const statusCls = STATUS_CLASS[status] || 'status-want';
+  const statusBadge = `<span class="status-badge ${statusCls}">${escHtml(status)}</span>`;
 
   // Time stats
   const times = [
@@ -89,6 +84,15 @@ function renderRecipe(r) {
     r.totalTime ? `<div class="recipe-meta-item">${clockIcon()} <span>Total: ${formatTime(r.totalTime)}</span></div>` : '',
     r.servings  ? `<div class="recipe-meta-item">${servingsIcon()} <span>Serves ${r.servings}</span></div>` : ''
   ].filter(Boolean).join('');
+
+  // Inline status selector buttons
+  const statusSelector = `
+    <div class="status-selector" id="statusSelector">
+      ${STATUS_OPTIONS.map(opt => {
+        const active = opt === status ? STATUS_ACTIVE[opt] : '';
+        return `<button class="status-opt ${active}" data-status="${escHtml(opt)}">${escHtml(opt)}</button>`;
+      }).join('')}
+    </div>`;
 
   // Ingredients
   const ingredients = (r.ingredients || []).map((ing, i) => `
@@ -120,17 +124,6 @@ function renderRecipe(r) {
       <span>Source: <a href="${escHtml(r.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escHtml(sourceDomain(r.sourceUrl))}</a></span>
     </div>` : '';
 
-  // Cooked log
-  const cookedDates = r.cookedDates || [];
-  const cookedCount = cookedDates.length;
-  const lastCooked = cookedCount > 0 ? cookedDates[cookedDates.length - 1] : null;
-  const cookedLogHtml = cookedCount > 0 ? `
-    <div class="cooked-log" id="cookedLog">
-      <div class="cooked-log-title">Made it log</div>
-      <div class="cooked-log-stat">Made ${cookedCount} time${cookedCount !== 1 ? 's' : ''}</div>
-      ${lastCooked ? `<div class="cooked-log-last">Last made ${formatDate(lastCooked)}</div>` : ''}
-    </div>` : `<div id="cookedLog"></div>`;
-
   document.getElementById('recipeDetail').innerHTML = `
     <div class="recipe-hero">
       ${imageHtml}
@@ -138,6 +131,7 @@ function renderRecipe(r) {
       ${r.rating ? `<div class="recipe-stars">${stars}</div>` : ''}
       <div class="recipe-meta-row">${times}</div>
       <div class="recipe-tags">${statusBadge}${allTags}</div>
+      ${statusSelector}
       ${sourceHtml}
       ${r.description ? `<p class="recipe-description">${escHtml(r.description)}</p>` : ''}
     </div>
@@ -154,67 +148,125 @@ function renderRecipe(r) {
     </div>
 
     ${notesHtml}
-    ${cookedLogHtml}
+
+    <div class="cooked-log" id="cookedLog"></div>
   `;
+
+  renderCookedLog();
+  bindStatusSelector();
 }
 
-/* ── Made it today ───────────────────────────────────── */
-function bindMadeItButton() {
-  const btn = document.getElementById('madeItBtn');
-  if (!btn || !currentRecipe) return;
+/* ── Inline status selector ──────────────────────────── */
+function bindStatusSelector() {
+  document.getElementById('statusSelector').addEventListener('click', async e => {
+    const btn = e.target.closest('.status-opt');
+    if (!btn) return;
+    const newStatus = btn.dataset.status;
+    if (newStatus === currentRecipe.status) return;
 
-  btn.addEventListener('click', async () => {
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-    const r = currentRecipe;
-    const dates = r.cookedDates || [];
+    currentRecipe.status = newStatus;
 
-    // Prevent double-logging the same day
-    if (dates[dates.length - 1] === today) {
-      btn.textContent = '✓ Already logged today';
-      btn.classList.add('logged');
-      setTimeout(() => {
-        btn.textContent = '✓ Made it today';
-        btn.classList.remove('logged');
-      }, 2000);
-      return;
+    // Update button states
+    document.querySelectorAll('.status-opt').forEach(b => {
+      b.className = 'status-opt';
+      if (b.dataset.status === newStatus) b.classList.add(STATUS_ACTIVE[newStatus]);
+    });
+
+    // Update badge in tags row
+    const badge = document.querySelector('.status-badge');
+    if (badge) {
+      badge.className = `status-badge ${STATUS_CLASS[newStatus] || 'status-want'}`;
+      badge.textContent = newStatus;
     }
 
-    // Update in memory
-    dates.push(today);
-    r.cookedDates = dates;
-
-    // Auto-upgrade status
-    if (!r.status || r.status === 'Want to try') r.status = 'Tried';
-
-    // Update display
-    const cookedCount = dates.length;
-    const logEl = document.getElementById('cookedLog');
-    if (logEl) {
-      logEl.className = 'cooked-log';
-      logEl.innerHTML = `
-        <div class="cooked-log-title">Made it log</div>
-        <div class="cooked-log-stat">Made ${cookedCount} time${cookedCount !== 1 ? 's' : ''}</div>
-        <div class="cooked-log-last">Last made ${formatDate(today)}</div>`;
-    }
-
-    btn.textContent = '✓ Logged!';
-    btn.classList.add('logged');
-    setTimeout(() => {
-      btn.textContent = '✓ Made it today';
-      btn.classList.remove('logged');
-    }, 2500);
-
-    // Persist via Worker
-    const cfg = getConfig();
-    if (!cfg.workerUrl || !cfg.password) return;
-    try {
-      await fetch(cfg.workerUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'upsert', password: cfg.password, payload: r, recipes: allRecipes })
-      });
-    } catch { /* silent fail — user can see the logged count updated locally */ }
+    await persist();
   });
+}
+
+/* ── Cooked log ──────────────────────────────────────── */
+function renderCookedLog() {
+  const el = document.getElementById('cookedLog');
+  if (!el) return;
+  const dates = currentRecipe.cookedDates || [];
+  const today = new Date().toISOString().slice(0, 10);
+
+  const entries = dates.length === 0
+    ? `<div class="cooked-log-empty">No entries yet — add your first below.</div>`
+    : [...dates].reverse().map((d, i) => `
+        <div class="cooked-log-entry">
+          <span>${formatDate(d)}</span>
+          <button class="cooked-log-del" data-date="${escHtml(d)}" title="Remove this entry">×</button>
+        </div>`).join('');
+
+  el.innerHTML = `
+    <div class="cooked-log-header">
+      <div class="cooked-log-title">Made it log</div>
+      <div class="cooked-log-count">${dates.length} time${dates.length !== 1 ? 's' : ''}</div>
+    </div>
+    <div class="cooked-log-add">
+      <input type="date" id="logDateInput" value="${today}" max="${today}">
+      <button class="cooked-log-add-btn" id="logAddBtn">+ Log date</button>
+    </div>
+    <div class="cooked-log-list">${entries}</div>`;
+
+  document.getElementById('logAddBtn').addEventListener('click', addCookedEntry);
+  document.querySelectorAll('.cooked-log-del').forEach(btn =>
+    btn.addEventListener('click', () => deleteCookedEntry(btn.dataset.date))
+  );
+}
+
+async function addCookedEntry() {
+  const input = document.getElementById('logDateInput');
+  const date = input.value;
+  if (!date) return;
+
+  const dates = currentRecipe.cookedDates || [];
+  if (dates.includes(date)) {
+    input.style.borderColor = 'var(--danger)';
+    setTimeout(() => { input.style.borderColor = ''; }, 1500);
+    return;
+  }
+
+  dates.push(date);
+  dates.sort();
+  currentRecipe.cookedDates = dates;
+
+  // Auto-upgrade status on first log
+  if (!currentRecipe.status || currentRecipe.status === 'Want to Make') {
+    currentRecipe.status = 'Made';
+    // Refresh status selector display
+    document.querySelectorAll('.status-opt').forEach(b => {
+      b.className = 'status-opt';
+      if (b.dataset.status === 'Made') b.classList.add(STATUS_ACTIVE['Made']);
+    });
+    const badge = document.querySelector('.status-badge');
+    if (badge) { badge.className = `status-badge ${STATUS_CLASS['Made']}`; badge.textContent = 'Made'; }
+  }
+
+  renderCookedLog();
+  await persist();
+}
+
+async function deleteCookedEntry(date) {
+  currentRecipe.cookedDates = (currentRecipe.cookedDates || []).filter(d => d !== date);
+  renderCookedLog();
+  await persist();
+}
+
+/* ── Persist to GitHub via Worker ─────────────────────── */
+async function persist() {
+  const cfg = getConfig();
+  if (!cfg.workerUrl || !cfg.password) return;
+  // Update in allRecipes array
+  const idx = allRecipes.findIndex(r => r.id === currentRecipe.id);
+  if (idx >= 0) allRecipes[idx] = currentRecipe;
+  try {
+    await fetch(cfg.workerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'upsert', password: cfg.password, payload: currentRecipe, recipes: allRecipes })
+    });
+  } catch { /* silent — data already updated in memory */ }
 }
 
 function renderError(msg) {
@@ -237,7 +289,6 @@ function formatTime(min) {
   return m ? `${h} hr ${m} min` : `${h} hr`;
 }
 function formatDate(dateStr) {
-  // dateStr is YYYY-MM-DD; parse as local date
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }

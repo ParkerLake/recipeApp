@@ -25,9 +25,9 @@ const PROTEIN_EMOJI = {
 };
 
 /* ── Status config ────────────────────────────────────── */
-const STATUS_OPTIONS = ['Want to try', 'Tried', 'Regular rotation'];
-const STATUS_CLASS   = { 'Want to try': 'status-want', 'Tried': 'status-tried', 'Regular rotation': 'status-regular' };
-const STATUS_LABEL   = { 'Want to try': 'Want to try', 'Tried': 'Tried', 'Regular rotation': '⭐ Regular' };
+const STATUS_OPTIONS = ['Want to Make', 'Made', 'Normal Rotation'];
+const STATUS_CLASS   = { 'Want to Make': 'status-want', 'Made': 'status-tried', 'Normal Rotation': 'status-regular' };
+const STATUS_LABEL   = { 'Want to Make': 'Want to Make', 'Made': 'Made', 'Normal Rotation': '⭐ Normal Rotation' };
 
 /* ── State ────────────────────────────────────────────── */
 let recipes = [];
@@ -139,7 +139,7 @@ function renderSidebar() {
 function computeStatusCounts() {
   const counts = {};
   for (const r of recipes) {
-    const s = r.status || 'Want to try';
+    const s = r.status || 'Want to Make';
     counts[s] = (counts[s] || 0) + 1;
   }
   return counts;
@@ -238,7 +238,7 @@ function getFilteredSorted() {
 
   // Status filter (OR within)
   if (activeStatusFilter.size > 0) {
-    list = list.filter(r => activeStatusFilter.has(r.status || 'Want to try'));
+    list = list.filter(r => activeStatusFilter.has(r.status || 'Want to Make'));
   }
 
   // Tag filters (AND between categories, OR within)
@@ -294,7 +294,7 @@ function renderGrid() {
       region  ? `<span class="card-tag tag-region">${escHtml(region)}</span>`   : ''
     ].filter(Boolean).join('');
 
-    const status = r.status || 'Want to try';
+    const status = r.status || 'Want to Make';
     const statusCls = STATUS_CLASS[status] || 'status-want';
     const statusLbl = STATUS_LABEL[status] || status;
 
@@ -418,7 +418,7 @@ function openModal(id) {
     document.getElementById('fieldInstructions').value = (recipe.instructions || []).join('\n');
     document.getElementById('fieldNotes').value      = recipe.notes || '';
     document.getElementById('fieldImageUrl').value   = recipe.imageUrl || '';
-    document.getElementById('fieldStatus').value     = recipe.status || 'Want to try';
+    document.getElementById('fieldStatus').value     = recipe.status || 'Want to Make';
     currentRating = recipe.rating || 0;
   } else {
     document.getElementById('recipeForm').reset();
@@ -470,7 +470,7 @@ async function handleSave() {
     notes:       document.getElementById('fieldNotes').value.trim(),
     rating:      parseInt(document.getElementById('fieldRating').value) || 0,
     tags:        collectTags(),
-    status:      document.getElementById('fieldStatus').value || 'Want to try',
+    status:      document.getElementById('fieldStatus').value || 'Want to Make',
     cookedDates: existingId
       ? (recipes.find(r => r.id === existingId)?.cookedDates || [])
       : [],

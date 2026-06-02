@@ -12,17 +12,19 @@
   <meta name="apple-mobile-web-app-title" content="Recipes">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <style>
-    /* ── Kitchen mode full-screen layout ─────────────────── */
-    html, body { height: 100%; overflow: hidden; background: #1A1A18; color: #F5F4F0; }
+    /* ── Kitchen mode — dark scrollable ─────────────────── */
+    html, body { background: #1A1A18; color: #F5F4F0; }
 
     .k-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 14px 20px;
       background: #111110;
       border-bottom: 1px solid #2E2E2B;
-      flex-shrink: 0;
     }
     .k-back {
       display: flex;
@@ -34,9 +36,11 @@
       padding: 6px 10px;
       border-radius: 6px;
       transition: background 0.1s, color 0.1s;
+      white-space: nowrap;
     }
     .k-back:hover { background: #2A2A27; color: #F5F4F0; }
     .k-back svg { width: 16px; height: 16px; }
+
     .k-title {
       font-size: 15px;
       font-weight: 600;
@@ -45,9 +49,10 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding: 0 16px;
+      padding: 0 14px;
       color: #E8E6DF;
     }
+
     .k-wake-btn {
       font-size: 13px;
       padding: 6px 12px;
@@ -59,136 +64,139 @@
       transition: all 0.15s;
       white-space: nowrap;
     }
-    .k-wake-btn.active { color: #F5B030; border-color: #7A5A10; background: #2A2010; }
-    .k-wake-btn:hover { border-color: #5A5A55; color: #E8E6DF; }
+    .k-wake-btn.active  { color: #F5B030; border-color: #7A5A10; background: #2A2010; }
+    .k-wake-btn:hover   { border-color: #5A5A55; color: #E8E6DF; }
 
-    /* ── Main kitchen area ───────────────────────────────── */
-    .k-main {
-      display: flex;
-      flex-direction: column;
-      height: calc(100vh - 57px);
-      overflow: hidden;
+    /* ── Recipe body ─────────────────────────────────────── */
+    .k-main { padding: 0 0 60px; }
+
+    .k-recipe {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 28px 22px 40px;
     }
 
-    /* ── Progress bar ────────────────────────────────────── */
-    .k-progress-bar {
-      height: 3px;
-      background: #2E2E2B;
-      flex-shrink: 0;
-    }
-    .k-progress-fill {
-      height: 100%;
-      background: var(--accent);
-      transition: width 0.3s ease;
-    }
-
-    /* ── Step counter ────────────────────────────────────── */
-    .k-step-counter {
-      text-align: center;
-      font-size: 13px;
-      color: #5C5A55;
-      padding: 14px 20px 0;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      flex-shrink: 0;
-    }
-
-    /* ── Step content ────────────────────────────────────── */
-    .k-step-wrap {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px 28px;
-      overflow: hidden;
-    }
-
-    .k-step-text {
-      font-size: clamp(20px, 4vw, 30px);
-      line-height: 1.55;
-      color: #F5F4F0;
-      text-align: center;
-      max-width: 700px;
-    }
-
-    .k-ingredients-view {
+    .k-hero-img {
       width: 100%;
-      max-width: 600px;
-      text-align: left;
+      max-height: 280px;
+      object-fit: cover;
+      border-radius: 14px;
+      display: block;
+      margin-bottom: 24px;
     }
-    .k-ingredients-view h2 {
-      font-size: 14px;
+
+    .k-recipe-title {
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: #F5F4F0;
+      margin-bottom: 10px;
+    }
+
+    .k-meta {
+      font-size: 15px;
+      color: #6C6A64;
+      margin-bottom: 14px;
+    }
+
+    .k-desc {
+      font-size: 17px;
+      color: #9C9A94;
+      line-height: 1.6;
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #2E2E2B;
+    }
+
+    .k-section-label {
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.09em;
       color: #5C5A55;
-      margin-bottom: 18px;
-      text-align: center;
+      margin-bottom: 16px;
     }
-    .k-ingredients-list { list-style: none; }
-    .k-ingredients-list li {
+
+    .k-divider {
+      height: 1px;
+      background: #2E2E2B;
+      margin: 32px 0;
+    }
+
+    /* ── Ingredients ─────────────────────────────────────── */
+    .k-ingredients { list-style: none; }
+    .k-ingredients li {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid #2E2E2B;
-      font-size: clamp(15px, 3vw, 20px);
+      gap: 14px;
+      padding: 13px 0;
+      border-bottom: 1px solid #262623;
+      font-size: clamp(16px, 3vw, 20px);
       color: #E8E6DF;
+      line-height: 1.4;
     }
-    .k-ingredients-list li:last-child { border-bottom: none; }
-    .k-ing-check {
+    .k-ingredients li:last-child { border-bottom: none; }
+
+    .k-check {
       width: 22px;
       height: 22px;
       border-radius: 5px;
-      border: 1.5px solid #5C5A55;
+      border: 1.5px solid #4A4A46;
       background: transparent;
       flex-shrink: 0;
-      margin-top: 2px;
+      margin-top: 1px;
       cursor: pointer;
       appearance: none;
       transition: background 0.12s, border-color 0.12s;
     }
-    .k-ing-check:checked { background: var(--accent); border-color: var(--accent); }
-    .k-ing-check:checked + span { opacity: 0.4; text-decoration: line-through; }
+    .k-check:checked { background: var(--accent); border-color: var(--accent); }
+    .k-check:checked + label { opacity: 0.38; text-decoration: line-through; }
+    .k-ingredients label { cursor: pointer; flex: 1; }
 
-    /* ── Nav buttons ─────────────────────────────────────── */
-    .k-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px 28px;
-      gap: 12px;
-      flex-shrink: 0;
+    /* ── Instructions ────────────────────────────────────── */
+    .k-instructions { list-style: none; }
+    .k-instructions li {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 16px;
+      padding-bottom: 28px;
+      align-items: start;
     }
-    .k-nav-btn {
-      flex: 1;
-      padding: 16px;
-      border-radius: 12px;
-      font-size: 17px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: all 0.15s;
+    .k-step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #2A2A27;
+      color: var(--accent);
+      font-size: 16px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      flex-shrink: 0;
     }
-    .k-nav-btn svg { width: 20px; height: 20px; }
-    .k-prev-btn { background: #2A2A27; color: #9C9A94; max-width: 160px; }
-    .k-prev-btn:hover:not(:disabled) { background: #363632; color: #E8E6DF; }
-    .k-prev-btn:disabled { opacity: 0.3; cursor: default; }
-    .k-next-btn { background: var(--accent); color: #fff; }
-    .k-next-btn:hover { background: var(--accent-dark); }
-    .k-next-btn.done { background: var(--success); }
+    .k-step-body {
+      font-size: clamp(17px, 3.5vw, 22px);
+      line-height: 1.6;
+      color: #E8E6DF;
+      padding-top: 8px;
+    }
+
+    /* ── Notes ───────────────────────────────────────────── */
+    .k-notes {
+      font-size: clamp(15px, 2.5vw, 18px);
+      color: #9C9A94;
+      line-height: 1.65;
+    }
 
     /* ── Loading / error ─────────────────────────────────── */
     .k-center {
-      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      min-height: 60vh;
       gap: 16px;
       color: #5C5A55;
       text-align: center;
@@ -202,11 +210,12 @@
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-  <!-- ── Header ────────────────────────────────────────── -->
+  <!-- ── Sticky header ──────────────────────────────────── -->
   <div class="k-header">
     <a href="#" class="k-back" id="backBtn">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
@@ -216,7 +225,7 @@
     <button class="k-wake-btn" id="wakeLockBtn" title="Keep screen awake">☀ Screen on</button>
   </div>
 
-  <!-- ── Main ──────────────────────────────────────────── -->
+  <!-- ── Scrollable recipe ───────────────────────────────── -->
   <div class="k-main" id="kMain">
     <div class="k-center"><div class="k-spinner"></div><p>Loading…</p></div>
   </div>
