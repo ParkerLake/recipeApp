@@ -67,9 +67,7 @@
     },
     "dateAdded": "2026-06-02T04:09:39.482Z",
     "dateModified": "2026-06-02T04:21:19.154Z",
-    "cookedDates": [
-      "2026-06-02"
-    ],
+    "cookedDates": [],
     "status": "Tried"
   },
   {
@@ -114,7 +112,10 @@
       ]
     },
     "status": "Regular rotation",
-    "cookedDates": ["2025-03-10", "2025-04-02"],
+    "cookedDates": [
+      "2025-03-10",
+      "2025-04-02"
+    ],
     "dateAdded": "2025-01-15T10:00:00Z",
     "dateModified": "2025-01-15T10:00:00Z"
   },
