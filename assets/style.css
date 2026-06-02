@@ -63,7 +63,6 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); ou
   gap: 8px;
   flex-shrink: 0;
 }
-.logo-svg { width: 30px; height: 22px; flex-shrink: 0; }
 .logo-text { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); white-space: nowrap; }
 
 .header-search {
@@ -360,6 +359,20 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); ou
 .tag-complexity { background: #FFF8EC; color: #7A5200; border-color: #F0D9A0; }
 .tag-meal    { background: #F4EDFF; color: #5B2DA0; border-color: #D9C4F5; }
 
+/* ── Status badge ──────────────────────────────────────── */
+.status-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+.status-want   { background: #F0F4FF; color: #3A55C0; border-color: #C8D4F8; }
+.status-tried  { background: #FFF4E8; color: #8A5200; border-color: #F5D9A0; }
+.status-regular { background: #EDFAF3; color: #1A6B43; border-color: #BBEBD4; }
+
 /* ── Empty & Loading States ───────────────────────────── */
 .empty-state, .loading-state {
   display: flex;
@@ -487,6 +500,20 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); ou
 }
 .field input:hover, .field textarea:hover { border-color: var(--border-strong); }
 .field input:focus, .field textarea:focus { border-color: var(--accent); }
+
+.field select {
+  width: 100%;
+  padding: 8px 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  font-size: 14px;
+  transition: border-color 0.15s;
+  cursor: pointer;
+}
+.field select:hover { border-color: var(--border-strong); }
+.field select:focus { border-color: var(--accent); outline: none; }
 
 .form-row { display: flex; gap: 12px; align-items: flex-start; }
 .form-row .field { flex: 1; }

@@ -126,8 +126,27 @@ function extractSchemaOrg(html, sourceUrl) {
       const instructions = (() => {
         const raw = data.recipeInstructions;
         if (!raw) return [];
+
+        // Strip HTML tags and collapse whitespace
+        const stripHtml = s => String(s)
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&quot;/g, '"')
+          .replace(/\s{2,}/g, ' ').trim();
+
+        // Recursively extract steps — handles HowToStep, HowToSection, strings
+        const extractStep = (s) => {
+          if (typeof s === 'string') return [stripHtml(s)];
+          // HowToSection wraps steps in itemListElement — flatten them
+          if (s['@type'] === 'HowToSection' || Array.isArray(s.itemListElement)) {
+            return (s.itemListElement || []).flatMap(extractStep);
+          }
+          // HowToStep: prefer text, fall back to description then name
+          const text = s.text || s.description || s.name || '';
+          return text ? [stripHtml(text)] : [];
+        };
+
         if (typeof raw === 'string') return raw.split(/\n+/).map(s => s.trim()).filter(Boolean);
-        if (Array.isArray(raw)) return raw.map(s => typeof s === 'string' ? s : s.text || s.name || '').filter(Boolean);
+        if (Array.isArray(raw)) return raw.flatMap(extractStep).filter(Boolean);
         return [];
       })();
 

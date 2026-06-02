@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="114" fill="#C0663A"/>
+  <!-- Salt shaker silhouette -->
+  <g fill="none" stroke="#FAFAF8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Shaker body -->
+    <rect x="196" y="240" width="120" height="160" rx="20" fill="#FAFAF8" stroke="none"/>
+    <!-- Shaker neck/top -->
+    <rect x="216" y="190" width="80" height="60" rx="14" fill="#FAFAF8" stroke="none"/>
+    <!-- Shaker cap -->
+    <rect x="226" y="170" width="60" height="30" rx="10" fill="#F5EDE8" stroke="none"/>
+    <!-- Salt dots (holes) -->
+    <circle cx="241" cy="182" r="4" fill="#C0663A"/>
+    <circle cx="256" cy="182" r="4" fill="#C0663A"/>
+    <circle cx="271" cy="182" r="4" fill="#C0663A"/>
+    <!-- Wave line at bottom of body -->
+    <path d="M196 360 Q216 340 236 360 Q256 380 276 360 Q296 340 316 360" stroke="#C0663A" stroke-width="6" fill="none"/>
+  </g>
+</svg>

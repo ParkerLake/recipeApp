@@ -7,6 +7,15 @@ const TAG_COLORS = {
   meal:       'tag-meal'
 };
 
+const STATUS_CLASS = { 'Want to try': 'status-want', 'Tried': 'status-tried', 'Regular rotation': 'status-regular' };
+const getConfig = () => ({
+  workerUrl: localStorage.getItem('mep_workerUrl') || '',
+  password:  localStorage.getItem('mep_password')  || ''
+});
+
+let allRecipes = [];
+let currentRecipe = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
@@ -19,10 +28,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     const resp = await fetch('data/recipes.json?v=' + Date.now());
     if (!resp.ok) throw new Error('Could not load recipes');
-    const recipes = await resp.json();
-    const recipe = recipes.find(r => r.id === id);
+    allRecipes = await resp.json();
+    const recipe = allRecipes.find(r => r.id === id);
     if (!recipe) throw new Error('Recipe not found');
+    currentRecipe = recipe;
     renderRecipe(recipe);
+    bindMadeItButton();
   } catch (e) {
     renderError(e.message);
   }
@@ -47,6 +58,11 @@ function renderRecipe(r) {
     });
   });
 
+  // Kitchen mode button
+  document.getElementById('kitchenBtn').addEventListener('click', () => {
+    window.location.href = `kitchen.html?id=${encodeURIComponent(r.id)}`;
+  });
+
   // Edit button — passes id back to index with edit intent
   document.getElementById('editBtn').addEventListener('click', () => {
     window.location.href = `index.html?edit=${encodeURIComponent(r.id)}`;
@@ -55,6 +71,11 @@ function renderRecipe(r) {
   // Stars
   const stars = [1,2,3,4,5].map(i =>
     `<span class="detail-star ${i <= (r.rating||0) ? 'filled' : ''}">★</span>`).join('');
+
+  // Status badge
+  const status = r.status || 'Want to try';
+  const statusCls = STATUS_CLASS[status] || 'status-want';
+  const statusBadge = `<span class="status-badge ${statusCls}">${escHtml(status)}</span>`;
 
   // Tags
   const allTags = Object.entries(r.tags || {}).flatMap(([cat, vals]) =>
@@ -83,10 +104,7 @@ function renderRecipe(r) {
   // Notes
   const notesHtml = r.notes ? `
     <div class="notes-box">
-      <div class="section-title" style="display:flex;align-items:center;gap:6px">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        Notes &amp; tips
-      </div>
+      <div class="section-title">📝 Notes &amp; tips</div>
       <p>${escHtml(r.notes).replace(/\n/g,'<br>')}</p>
     </div>` : '';
 
@@ -102,13 +120,24 @@ function renderRecipe(r) {
       <span>Source: <a href="${escHtml(r.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escHtml(sourceDomain(r.sourceUrl))}</a></span>
     </div>` : '';
 
+  // Cooked log
+  const cookedDates = r.cookedDates || [];
+  const cookedCount = cookedDates.length;
+  const lastCooked = cookedCount > 0 ? cookedDates[cookedDates.length - 1] : null;
+  const cookedLogHtml = cookedCount > 0 ? `
+    <div class="cooked-log" id="cookedLog">
+      <div class="cooked-log-title">Made it log</div>
+      <div class="cooked-log-stat">Made ${cookedCount} time${cookedCount !== 1 ? 's' : ''}</div>
+      ${lastCooked ? `<div class="cooked-log-last">Last made ${formatDate(lastCooked)}</div>` : ''}
+    </div>` : `<div id="cookedLog"></div>`;
+
   document.getElementById('recipeDetail').innerHTML = `
     <div class="recipe-hero">
       ${imageHtml}
       <h1 class="recipe-title">${escHtml(r.title)}</h1>
       ${r.rating ? `<div class="recipe-stars">${stars}</div>` : ''}
       <div class="recipe-meta-row">${times}</div>
-      ${allTags ? `<div class="recipe-tags">${allTags}</div>` : ''}
+      <div class="recipe-tags">${statusBadge}${allTags}</div>
       ${sourceHtml}
       ${r.description ? `<p class="recipe-description">${escHtml(r.description)}</p>` : ''}
     </div>
@@ -125,19 +154,73 @@ function renderRecipe(r) {
     </div>
 
     ${notesHtml}
+    ${cookedLogHtml}
   `;
+}
+
+/* ── Made it today ───────────────────────────────────── */
+function bindMadeItButton() {
+  const btn = document.getElementById('madeItBtn');
+  if (!btn || !currentRecipe) return;
+
+  btn.addEventListener('click', async () => {
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const r = currentRecipe;
+    const dates = r.cookedDates || [];
+
+    // Prevent double-logging the same day
+    if (dates[dates.length - 1] === today) {
+      btn.textContent = '✓ Already logged today';
+      btn.classList.add('logged');
+      setTimeout(() => {
+        btn.textContent = '✓ Made it today';
+        btn.classList.remove('logged');
+      }, 2000);
+      return;
+    }
+
+    // Update in memory
+    dates.push(today);
+    r.cookedDates = dates;
+
+    // Auto-upgrade status
+    if (!r.status || r.status === 'Want to try') r.status = 'Tried';
+
+    // Update display
+    const cookedCount = dates.length;
+    const logEl = document.getElementById('cookedLog');
+    if (logEl) {
+      logEl.className = 'cooked-log';
+      logEl.innerHTML = `
+        <div class="cooked-log-title">Made it log</div>
+        <div class="cooked-log-stat">Made ${cookedCount} time${cookedCount !== 1 ? 's' : ''}</div>
+        <div class="cooked-log-last">Last made ${formatDate(today)}</div>`;
+    }
+
+    btn.textContent = '✓ Logged!';
+    btn.classList.add('logged');
+    setTimeout(() => {
+      btn.textContent = '✓ Made it today';
+      btn.classList.remove('logged');
+    }, 2500);
+
+    // Persist via Worker
+    const cfg = getConfig();
+    if (!cfg.workerUrl || !cfg.password) return;
+    try {
+      await fetch(cfg.workerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'upsert', password: cfg.password, payload: r, recipes: allRecipes })
+      });
+    } catch { /* silent fail — user can see the logged count updated locally */ }
+  });
 }
 
 function renderError(msg) {
   document.getElementById('recipeDetail').innerHTML = `
     <div class="empty-state">
-      <div class="empty-icon">
-        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M8.5 15.5s1.5-1.5 3.5-1.5 3.5 1.5 3.5 1.5"/>
-          <line x1="9" y1="9.5" x2="9" y2="9.51"/><line x1="15" y1="9.5" x2="15" y2="9.51"/>
-        </svg>
-      </div>
+      <div class="empty-icon">😕</div>
       <p class="empty-title">${escHtml(msg)}</p>
       <p><a href="index.html">Back to all recipes</a></p>
     </div>`;
@@ -152,6 +235,11 @@ function formatTime(min) {
   if (min < 60) return `${min} min`;
   const h = Math.floor(min / 60), m = min % 60;
   return m ? `${h} hr ${m} min` : `${h} hr`;
+}
+function formatDate(dateStr) {
+  // dateStr is YYYY-MM-DD; parse as local date
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 function sourceDomain(url) {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; }

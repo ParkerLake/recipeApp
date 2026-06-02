@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Salty Lake Recipes</title>
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#C0663A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Recipes">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
 <body>
 
   <!-- ── Header ──────────────────────────────────────────── -->
   <header class="header">
     <div class="header-logo">
-      <svg class="logo-svg" viewBox="0 0 30 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M1 19 L9 3 L13.5 10.5 L18 1 L29 19 Z" fill="#C0663A"/>
-        <path d="M1 21 Q8 18.5 15 21 Q22 23.5 29 21" stroke="#C0663A" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-      </svg>
       <span class="logo-text">Salty Lake Recipes</span>
     </div>
     <div class="header-search">
@@ -54,13 +56,7 @@
       <div id="activeFilterBar" class="active-filter-bar hidden"></div>
       <div id="recipeGrid" class="recipe-grid"></div>
       <div id="emptyState" class="empty-state hidden">
-        <div class="empty-icon">
-          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M3 2v7c0 1.1.9 2 2 2h2a2 2 0 002-2V2"/>
-            <path d="M7 2v20"/>
-            <path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h1v5a1 1 0 002 0V2"/>
-          </svg>
-        </div>
+        <div class="empty-icon">🍽</div>
         <p class="empty-title">No recipes found</p>
         <p class="empty-sub">Try adjusting your filters or search query</p>
       </div>
@@ -113,9 +109,19 @@
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label" for="fieldSourceUrl">Source URL</label>
-            <input type="url" id="fieldSourceUrl" placeholder="https://…">
+          <div class="form-row">
+            <div class="field field-wide">
+              <label class="field-label" for="fieldSourceUrl">Source URL</label>
+              <input type="url" id="fieldSourceUrl" placeholder="https://…">
+            </div>
+            <div class="field">
+              <label class="field-label" for="fieldStatus">Status</label>
+              <select id="fieldStatus">
+                <option value="Want to try">Want to try</option>
+                <option value="Tried">Tried it</option>
+                <option value="Regular rotation">Regular rotation</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-row">
@@ -226,5 +232,10 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="assets/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/recipeApp/sw.js').catch(() => {});
+    }
+  </script>
 </body>
 </html>

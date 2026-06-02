@@ -18,16 +18,21 @@ const TAG_CATEGORIES = {
   }
 };
 
-/* ── Placeholder icon for recipe cards without images ─── */
-const PLACEHOLDER_ICON = `<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="color:#C8C5BB" aria-hidden="true">
-  <path d="M3 2v7c0 1.1.9 2 2 2h2a2 2 0 002-2V2"/>
-  <path d="M7 2v20"/>
-  <path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h1v5a1 1 0 002 0V2"/>
-</svg>`;
+/* ── Emoji placeholders by protein ───────────────────── */
+const PROTEIN_EMOJI = {
+  'Chicken':'🍗','Beef':'🥩','Pork':'🥓','Lamb':'🍖','Seafood':'🐟',
+  'Turkey':'🦃','Vegetarian':'🥦','Vegan':'🌱','Eggs':'🥚'
+};
+
+/* ── Status config ────────────────────────────────────── */
+const STATUS_OPTIONS = ['Want to try', 'Tried', 'Regular rotation'];
+const STATUS_CLASS   = { 'Want to try': 'status-want', 'Tried': 'status-tried', 'Regular rotation': 'status-regular' };
+const STATUS_LABEL   = { 'Want to try': 'Want to try', 'Tried': 'Tried', 'Regular rotation': '⭐ Regular' };
 
 /* ── State ────────────────────────────────────────────── */
 let recipes = [];
 let activeFilters = { protein: new Set(), region: new Set(), complexity: new Set(), meal: new Set() };
+let activeStatusFilter = new Set();
 let searchQuery = '';
 let sortBy = 'dateAdded';
 let currentEditId = null;
@@ -86,8 +91,28 @@ async function loadRecipes() {
 function renderSidebar() {
   const container = document.getElementById('sidebarContent');
   const counts = computeTagCounts();
+  const statusCounts = computeStatusCounts();
 
-  container.innerHTML = Object.entries(TAG_CATEGORIES).map(([cat, def]) => {
+  // Status section
+  const statusSection = `
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">
+        Status
+        ${activeStatusFilter.size ? `<button class="sidebar-clear-btn" onclick="clearStatusFilter()">clear</button>` : ''}
+      </div>
+      ${STATUS_OPTIONS.map(opt => {
+        const count = statusCounts[opt] || 0;
+        if (count === 0 && recipes.length > 0) return '';
+        const active = activeStatusFilter.has(opt) ? 'active' : '';
+        return `
+          <div class="filter-item ${active}" onclick="toggleStatusFilter('${opt.replace(/'/g,"\\'")}')">
+            <span>${opt}</span>
+            <span class="filter-count">${count}</span>
+          </div>`;
+      }).join('')}
+    </div>`;
+
+  const tagSections = Object.entries(TAG_CATEGORIES).map(([cat, def]) => {
     const activeCount = activeFilters[cat].size;
     return `
       <div class="sidebar-section">
@@ -107,6 +132,32 @@ function renderSidebar() {
         }).join('')}
       </div>`;
   }).join('');
+
+  container.innerHTML = statusSection + tagSections;
+}
+
+function computeStatusCounts() {
+  const counts = {};
+  for (const r of recipes) {
+    const s = r.status || 'Want to try';
+    counts[s] = (counts[s] || 0) + 1;
+  }
+  return counts;
+}
+
+function toggleStatusFilter(val) {
+  if (activeStatusFilter.has(val)) activeStatusFilter.delete(val);
+  else activeStatusFilter.add(val);
+  renderSidebar();
+  renderActiveFilterBar();
+  renderGrid();
+}
+
+function clearStatusFilter() {
+  activeStatusFilter.clear();
+  renderSidebar();
+  renderActiveFilterBar();
+  renderGrid();
 }
 
 function computeTagCounts() {
@@ -142,6 +193,7 @@ function clearCategoryFilter(cat) {
 
 function clearAllFilters() {
   for (const cat of Object.keys(activeFilters)) activeFilters[cat].clear();
+  activeStatusFilter.clear();
   renderSidebar();
   renderActiveFilterBar();
   renderGrid();
@@ -151,21 +203,19 @@ function clearAllFilters() {
 function renderActiveFilterBar() {
   const bar = document.getElementById('activeFilterBar');
   const chips = [];
+  for (const val of activeStatusFilter) chips.push({ type: 'status', val });
   for (const [cat, vals] of Object.entries(activeFilters)) {
-    for (const val of vals) {
-      chips.push({ cat, val });
-    }
+    for (const val of vals) chips.push({ type: 'tag', cat, val });
   }
   if (chips.length === 0) {
     bar.classList.add('hidden');
     return;
   }
   bar.classList.remove('hidden');
-  bar.innerHTML = chips.map(({ cat, val }) => `
-    <span class="filter-chip">
-      ${val}
-      <button class="filter-chip-remove" onclick="toggleFilter('${cat}','${val.replace(/'/g,"\\'")}')">×</button>
-    </span>`).join('') +
+  bar.innerHTML = chips.map(c => c.type === 'status'
+    ? `<span class="filter-chip">${c.val}<button class="filter-chip-remove" onclick="toggleStatusFilter('${c.val.replace(/'/g,"\\'")}')">×</button></span>`
+    : `<span class="filter-chip">${c.val}<button class="filter-chip-remove" onclick="toggleFilter('${c.cat}','${c.val.replace(/'/g,"\\'")}')">×</button></span>`
+  ).join('') +
     `<button class="btn-ghost" style="font-size:12px;padding:4px 8px" onclick="clearAllFilters()">Clear all</button>`;
 }
 
@@ -184,6 +234,11 @@ function getFilteredSorted() {
       r.instructions?.some(i => i.toLowerCase().includes(q)) ||
       Object.values(r.tags || {}).flat().some(t => t.toLowerCase().includes(q))
     );
+  }
+
+  // Status filter (OR within)
+  if (activeStatusFilter.size > 0) {
+    list = list.filter(r => activeStatusFilter.has(r.status || 'Want to try'));
   }
 
   // Tag filters (AND between categories, OR within)
@@ -222,6 +277,7 @@ function renderGrid() {
   grid.innerHTML = list.map(r => {
     const protein = r.tags?.protein?.[0] || '';
     const region  = r.tags?.region?.[0]  || '';
+    const emoji   = r.imageUrl ? '' : (PROTEIN_EMOJI[protein] || '🍽');
     const imageEl = r.imageUrl
       ? `<img class="card-image" src="${escHtml(r.imageUrl)}" alt="${escHtml(r.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
       : '';
@@ -238,10 +294,14 @@ function renderGrid() {
       region  ? `<span class="card-tag tag-region">${escHtml(region)}</span>`   : ''
     ].filter(Boolean).join('');
 
+    const status = r.status || 'Want to try';
+    const statusCls = STATUS_CLASS[status] || 'status-want';
+    const statusLbl = STATUS_LABEL[status] || status;
+
     return `
       <article class="recipe-card" onclick="openRecipe('${r.id}')" tabindex="0" role="button" aria-label="${escHtml(r.title)}">
         ${imageEl}
-        <div class="card-image-placeholder" ${placeholderStyle}>${PLACEHOLDER_ICON}</div>
+        <div class="card-image-placeholder" ${placeholderStyle}>${emoji}</div>
         <div class="card-body">
           <div class="card-title">${escHtml(r.title)}</div>
           <div class="card-meta">
@@ -250,7 +310,10 @@ function renderGrid() {
             ${r.servings ? `<span>Serves ${r.servings}</span>` : ''}
           </div>
           ${r.rating ? `<div class="card-stars">${stars}</div>` : ''}
-          ${tagHtml ? `<div class="card-tags">${tagHtml}</div>` : ''}
+          <div class="card-tags" style="margin-top:auto">
+            <span class="status-badge ${statusCls}">${escHtml(statusLbl)}</span>
+            ${tagHtml}
+          </div>
         </div>
       </article>`;
   }).join('');
@@ -355,6 +418,7 @@ function openModal(id) {
     document.getElementById('fieldInstructions').value = (recipe.instructions || []).join('\n');
     document.getElementById('fieldNotes').value      = recipe.notes || '';
     document.getElementById('fieldImageUrl').value   = recipe.imageUrl || '';
+    document.getElementById('fieldStatus').value     = recipe.status || 'Want to try';
     currentRating = recipe.rating || 0;
   } else {
     document.getElementById('recipeForm').reset();
@@ -406,6 +470,10 @@ async function handleSave() {
     notes:       document.getElementById('fieldNotes').value.trim(),
     rating:      parseInt(document.getElementById('fieldRating').value) || 0,
     tags:        collectTags(),
+    status:      document.getElementById('fieldStatus').value || 'Want to try',
+    cookedDates: existingId
+      ? (recipes.find(r => r.id === existingId)?.cookedDates || [])
+      : [],
     dateAdded:   existingId
       ? recipes.find(r => r.id === existingId)?.dateAdded || now
       : now,
@@ -466,23 +534,42 @@ async function handleExtract() {
     return;
   }
 
+  // Validate Worker URL looks reasonable before sending
+  let workerUrl;
+  try {
+    workerUrl = new URL(cfg.workerUrl);
+  } catch {
+    setExtractStatus('error', '✕  Invalid Worker URL — go to Settings and check it starts with https://');
+    return;
+  }
+
   setExtractStatus('loading', '⏳  Fetching recipe…');
   document.getElementById('extractBtn').disabled = true;
 
   try {
-    const resp = await fetch(cfg.workerUrl, {
+    const resp = await fetch(workerUrl.href, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'extract', url, password: cfg.password })
     });
 
     if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.error || 'Extraction failed');
+      let errMsg;
+      try { errMsg = (await resp.json()).error; } catch { /* non-JSON body */ }
+      if (resp.status === 401) {
+        throw new Error('Wrong password — re-open Settings and make sure the App Password matches your Cloudflare APP_PASSWORD variable exactly');
+      }
+      if (resp.status === 405) {
+        throw new Error('Wrong Worker URL — go to Settings and make sure it ends in .workers.dev, not .github.io');
+      }
+      if (resp.status === 500) {
+        throw new Error((errMsg || 'Worker error') + ' — check your Worker logs in the Cloudflare dashboard');
+      }
+      throw new Error(errMsg || `Request failed (HTTP ${resp.status})`);
     }
 
     const data = await resp.json();
-    if (!data.title) throw new Error('Could not find a recipe at that URL');
+    if (!data.title) throw new Error('No recipe found at that URL — try opening the link directly and copying the exact recipe page URL (not a Pinterest pin)');
 
     // Pre-fill form
     if (data.title)        document.getElementById('fieldTitle').value       = data.title;
@@ -509,7 +596,11 @@ async function handleExtract() {
 
     setExtractStatus('success', '✓  Recipe extracted — review and save');
   } catch (e) {
-    setExtractStatus('error', '✕  ' + (e.message || 'Could not extract recipe'));
+    let msg = e.message || 'Could not extract recipe';
+    if (msg === 'Failed to fetch' || msg.includes('NetworkError') || msg.includes('Load failed')) {
+      msg = 'Could not reach your Worker — check the Worker URL in Settings and make sure your Worker is deployed in Cloudflare';
+    }
+    setExtractStatus('error', '✕  ' + msg);
   } finally {
     document.getElementById('extractBtn').disabled = false;
   }

@@ -32,6 +32,8 @@
       "complexity": ["Quick (<30 min)"],
       "meal": ["Dinner"]
     },
+    "status": "Regular rotation",
+    "cookedDates": ["2025-03-10", "2025-04-02"],
     "dateAdded": "2025-01-15T10:00:00Z",
     "dateModified": "2025-01-15T10:00:00Z"
   },
@@ -76,6 +78,8 @@
       "complexity": ["Easy (30-60 min)"],
       "meal": ["Dinner"]
     },
+    "status": "Want to try",
+    "cookedDates": [],
     "dateAdded": "2025-01-20T10:00:00Z",
     "dateModified": "2025-01-20T10:00:00Z"
   }

@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recipe — Salty Lake Recipes</title>
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#C0663A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Recipes">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <style>
     /* ── Recipe detail overrides ──────────────────────── */
     body { background: var(--bg); }
@@ -63,6 +69,33 @@
       border-color: #a8d9be;
       background: var(--success-bg);
     }
+    .made-it-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: #fff;
+      color: var(--text-2);
+      font-size: 13px;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .made-it-btn:hover { background: var(--accent-light); color: var(--accent-dark); border-color: var(--accent); }
+    .made-it-btn.logged { color: var(--success); border-color: #a8d9be; background: var(--success-bg); }
+
+    .cooked-log {
+      margin-top: 20px;
+      padding: 14px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .cooked-log-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 8px; }
+    .cooked-log-stat { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .cooked-log-last { font-size: 13px; color: var(--text-3); }
 
     .recipe-detail {
       max-width: 760px;
@@ -247,6 +280,12 @@
         <rect x="6" y="2" width="8" height="8" rx="1"/>
       </svg>
       <span id="copyBtnText">Copy link</span>
+    </button>
+    <button class="edit-btn" id="kitchenBtn" aria-label="Open in kitchen mode">
+      🍳 Kitchen mode
+    </button>
+    <button class="made-it-btn" id="madeItBtn" aria-label="Log that you made this today">
+      ✓ Made it today
     </button>
     <button class="edit-btn" id="editBtn">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
