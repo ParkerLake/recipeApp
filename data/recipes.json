@@ -173,59 +173,5 @@
     ],
     "dateAdded": "2025-01-15T10:00:00Z",
     "dateModified": "2025-01-15T10:00:00Z"
-  },
-  {
-    "id": "rec_sample2",
-    "slug": "chicken-tikka-masala",
-    "title": "Chicken Tikka Masala",
-    "sourceUrl": "https://www.bonappetit.com/recipe/chicken-tikka-masala",
-    "imageUrl": "",
-    "description": "Charred chicken in a rich, warmly-spiced tomato cream sauce. Better than takeout and not much harder.",
-    "prepTime": 20,
-    "cookTime": 40,
-    "totalTime": 60,
-    "servings": 4,
-    "ingredients": [
-      "1.5 lbs boneless skinless chicken thighs, cut into 2-inch pieces",
-      "1 cup whole-milk yogurt",
-      "2 tbsp tikka masala spice blend",
-      "4 cloves garlic, minced",
-      "1-inch piece fresh ginger, grated",
-      "2 tbsp neutral oil",
-      "1 medium onion, finely diced",
-      "1 can (14oz) crushed tomatoes",
-      "1 cup heavy cream",
-      "1 tsp garam masala",
-      "Salt and pepper to taste",
-      "Fresh cilantro and basmati rice to serve"
-    ],
-    "instructions": [
-      "Combine chicken with yogurt, tikka masala spice, half the garlic, half the ginger, salt and pepper. Marinate at least 1 hour or overnight.",
-      "Broil the marinated chicken on a foil-lined baking sheet at high heat for 10-12 minutes until charred in spots. Set aside.",
-      "Heat oil in a large skillet over medium heat. Cook onion until soft and golden, about 10 minutes. Add remaining garlic and ginger, cook 2 minutes more.",
-      "Add crushed tomatoes and simmer 10 minutes until thickened. Stir in heavy cream and garam masala.",
-      "Add the broiled chicken and simmer 5 minutes. Taste and adjust seasoning.",
-      "Serve over basmati rice, topped with fresh cilantro."
-    ],
-    "notes": "The broiling step is key — don't skip the char. Marinating overnight makes a big difference. Works well with cauliflower instead of chicken for a vegetarian version.",
-    "rating": 4,
-    "tags": {
-      "protein": [
-        "Chicken"
-      ],
-      "region": [
-        "Indian"
-      ],
-      "complexity": [
-        "Easy (30-60 min)"
-      ],
-      "meal": [
-        "Dinner"
-      ]
-    },
-    "status": "Want to Make",
-    "cookedDates": [],
-    "dateAdded": "2025-01-20T10:00:00Z",
-    "dateModified": "2025-01-20T10:00:00Z"
   }
 ]
