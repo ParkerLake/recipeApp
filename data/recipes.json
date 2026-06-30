@@ -126,57 +126,52 @@
     "status": "Made"
   },
   {
-    "id": "rec_sample2",
-    "slug": "chicken-tikka-masala",
-    "title": "Chicken Tikka Masala",
-    "sourceUrl": "https://www.bonappetit.com/recipe/chicken-tikka-masala",
+    "id": "rec_sample1",
+    "slug": "cacio-e-pepe",
+    "title": "Cacio e Pepe",
+    "sourceUrl": "https://www.seriouseats.com/cacio-e-pepe-recipe",
     "imageUrl": "",
-    "description": "Charred chicken in a rich, warmly-spiced tomato cream sauce. Better than takeout and not much harder.",
-    "prepTime": 20,
-    "cookTime": 40,
-    "totalTime": 60,
-    "servings": 4,
+    "description": "The classic Roman pasta dish reduced to its bare essentials — cheese, pepper, and pasta water.",
+    "prepTime": 5,
+    "cookTime": 20,
+    "totalTime": 25,
+    "servings": 2,
     "ingredients": [
-      "1.5 lbs boneless skinless chicken thighs, cut into 2-inch pieces",
-      "1 cup whole-milk yogurt",
-      "2 tbsp tikka masala spice blend",
-      "4 cloves garlic, minced",
-      "1-inch piece fresh ginger, grated",
-      "2 tbsp neutral oil",
-      "1 medium onion, finely diced",
-      "1 can (14oz) crushed tomatoes",
-      "1 cup heavy cream",
-      "1 tsp garam masala",
-      "Salt and pepper to taste",
-      "Fresh cilantro and basmati rice to serve"
+      "200g spaghetti or tonnarelli",
+      "100g Pecorino Romano, finely grated",
+      "50g Parmigiano-Reggiano, finely grated",
+      "2 tsp freshly cracked black pepper",
+      "Kosher salt"
     ],
     "instructions": [
-      "Combine chicken with yogurt, tikka masala spice, half the garlic, half the ginger, salt and pepper. Marinate at least 1 hour or overnight.",
-      "Broil the marinated chicken on a foil-lined baking sheet at high heat for 10-12 minutes until charred in spots. Set aside.",
-      "Heat oil in a large skillet over medium heat. Cook onion until soft and golden, about 10 minutes. Add remaining garlic and ginger, cook 2 minutes more.",
-      "Add crushed tomatoes and simmer 10 minutes until thickened. Stir in heavy cream and garam masala.",
-      "Add the broiled chicken and simmer 5 minutes. Taste and adjust seasoning.",
-      "Serve over basmati rice, topped with fresh cilantro."
+      "Bring a large pot of lightly salted water to a boil. Cook pasta according to package directions until just shy of al dente, reserving 1 cup of pasta water before draining.",
+      "Meanwhile, toast the black pepper in a large skillet over medium heat until fragrant, about 1 minute. Add 1/3 cup of pasta water and bring to a simmer.",
+      "Add the drained pasta to the skillet and toss to coat. Remove from heat.",
+      "Add both cheeses gradually, tossing constantly and adding pasta water a splash at a time to create a creamy, emulsified sauce. The key is to keep tossing — don't let it clump.",
+      "Serve immediately with extra pepper and cheese."
     ],
-    "notes": "The broiling step is key — don't skip the char. Marinating overnight makes a big difference. Works well with cauliflower instead of chicken for a vegetarian version.",
-    "rating": 4,
+    "notes": "Use freshly cracked pepper — pre-ground won't give you the same punch. The pasta water is everything here; starchy water is what makes the sauce creamy without cream.",
+    "rating": 5,
     "tags": {
       "protein": [
-        "Chicken"
+        "Vegetarian"
       ],
       "region": [
-        "Indian"
+        "Italian"
       ],
       "complexity": [
-        "Easy (30-60 min)"
+        "Quick (<30 min)"
       ],
       "meal": [
         "Dinner"
       ]
     },
-    "status": "Want to Make",
-    "cookedDates": [],
-    "dateAdded": "2025-01-20T10:00:00Z",
-    "dateModified": "2025-01-20T10:00:00Z"
+    "status": "Regular rotation",
+    "cookedDates": [
+      "2025-03-10",
+      "2025-04-02"
+    ],
+    "dateAdded": "2025-01-15T10:00:00Z",
+    "dateModified": "2025-01-15T10:00:00Z"
   }
 ]
